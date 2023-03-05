@@ -5,6 +5,7 @@ all: build
 RM	=	rm -rf
 MKD	=	mkdir -p
 GO	=	go
+TAR	=	tar
 
 NAME	=	recipe-scraper
 BIN		=	./bin
