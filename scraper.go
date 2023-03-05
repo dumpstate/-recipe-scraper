@@ -8,6 +8,7 @@ type Scraper interface {
 	Name() string
 	Domain() string
 	TryFind(path string) (*Recipe, string, error)
+	SkipPrefixes() []string
 }
 
 type ScraperLocator struct {

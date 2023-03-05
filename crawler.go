@@ -32,13 +32,27 @@ type NextLinks struct {
 	Links     []string
 }
 
-func allLinks(resp string, currUrl string) []string {
+func isEligible(scraper Scraper, href string) bool {
+	if !strings.HasPrefix(href, "/") {
+		return false
+	}
+
+	for _, skipPrefix := range scraper.SkipPrefixes() {
+		if strings.HasPrefix(href, skipPrefix) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func allLinks(scraper Scraper, resp string, currUrl string) []string {
 	urls := []string{}
 	anchors := soup.HTMLParse(resp).FindAll("a")
 	for _, anchor := range anchors {
 		href := anchor.Attrs()["href"]
 
-		if strings.HasPrefix(href, "/") {
+		if isEligible(scraper, href) {
 			parsedUrl, err := url.Parse(currUrl)
 			if err == nil {
 				urls = append(urls, fmt.Sprintf("%s://%s%s", parsedUrl.Scheme, parsedUrl.Host, href))
@@ -62,7 +76,7 @@ func worker(
 		} else {
 			nextUrls <- &NextLinks{
 				SourceUrl: url,
-				Links:     allLinks(resp, url),
+				Links:     allLinks(scraper, resp, url),
 			}
 		}
 	}

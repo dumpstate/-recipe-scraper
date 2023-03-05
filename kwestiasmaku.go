@@ -88,6 +88,14 @@ func (scraper *KwestiaSmakuScraper) Domain() string {
 	return "kwestiasmaku.com"
 }
 
+func (scraper *KwestiaSmakuScraper) SkipPrefixes() []string {
+	return []string{
+		"/user/login",
+		"/hybridauth",
+		"/user?current=node",
+	}
+}
+
 func (scraper *KwestiaSmakuScraper) TryFind(url string) (*Recipe, string, error) {
 	fmt.Printf("Scraping %s\n", url)
 
