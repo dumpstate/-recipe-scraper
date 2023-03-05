@@ -16,6 +16,9 @@ clean:
 
 build: $(BIN) $(BIN)/$(NAME)
 
+package: build
+	$(TAR) cfJ $(NAME).tar.xz $(BIN)/$(NAME) LICENSE README.md
+
 $(BIN):
 	$(MKD) $(BIN)
 
