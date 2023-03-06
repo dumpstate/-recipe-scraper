@@ -32,6 +32,7 @@ func main() {
 	var inputUrl string
 	var output string
 	var concurrency int
+	var dbPath string
 
 	locator := NewScraperLocator()
 
@@ -111,6 +112,32 @@ func main() {
 					defer store.Close()
 					crwlr := NewCrawler(scraper, store, concurrency)
 					crwlr.Crawl(parsedUrl.String())
+
+					return nil
+				},
+			},
+			{
+				Name:  "fetch-images",
+				Usage: "Fetch images for recipes",
+				Flags: []cli.Flag{
+					&cli.PathFlag{
+						Name:        "db",
+						Usage:       "SQLite database path",
+						Required:    true,
+						Destination: &dbPath,
+					},
+					&cli.PathFlag{
+						Name:        "out",
+						Usage:       "target directory",
+						Required:    true,
+						Destination: &output,
+					},
+				},
+				Action: func(ctx *cli.Context) error {
+					store := NewStore(dbPath)
+					downloader := NewImgDownloader(store, output)
+
+					downloader.DownloadAll()
 
 					return nil
 				},

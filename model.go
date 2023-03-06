@@ -13,3 +13,8 @@ type Recipe struct {
 	Steps       []string           `json:"steps"`
 	Imgs        []string           `json:"imgs"`
 }
+
+type Record[T any] struct {
+	Id     int
+	Record T
+}

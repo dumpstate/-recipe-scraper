@@ -153,6 +153,41 @@ func (store *Store) CrawlerJobByStatus(scraperName string, status string, count 
 	return res
 }
 
+func (store *Store) AllRecipes(recipes chan<- *Record[Recipe]) {
+	rows, err := store.DB.Query(`
+		SELECT id, scraper_name, url, recipe
+		FROM recipes
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var scraperName string
+		var url string
+		var recipeStr string
+		err = rows.Scan(&id, &scraperName, &url, &recipeStr)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var recipe Recipe
+		err = json.Unmarshal([]byte(recipeStr), &recipe)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		recipes <- &Record[Recipe]{
+			Id:     id,
+			Record: recipe,
+		}
+	}
+
+	close(recipes)
+}
+
 func (store *Store) UpdateCrawlerJobStatus(scraperName string, urls []string, status string) {
 	if len(urls) == 0 {
 		return
