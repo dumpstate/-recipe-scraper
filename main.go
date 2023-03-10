@@ -30,6 +30,7 @@ func prettyPrint(data interface{}) {
 
 func main() {
 	var inputUrl string
+	var input string
 	var output string
 	var concurrency int
 	var dbPath string
@@ -139,6 +140,35 @@ func main() {
 
 					downloader.DownloadAll()
 
+					return nil
+				},
+			},
+			{
+				Name:  "img-crop-square",
+				Usage: "Crop images to (short side) square",
+				Flags: []cli.Flag{
+					&cli.PathFlag{
+						Name:        "img-dir",
+						Usage:       "directory with images",
+						Required:    true,
+						Destination: &input,
+					},
+					&cli.PathFlag{
+						Name:        "out-dir",
+						Usage:       "target directory",
+						Required:    true,
+						Destination: &output,
+					},
+					&cli.IntFlag{
+						Name:        "concurrency",
+						Usage:       "crawler concurrency",
+						Destination: &concurrency,
+						Required:    true,
+					},
+				},
+				Action: func(ctx *cli.Context) error {
+					imgp := NewImgProcessor(input, output, concurrency)
+					imgp.CropSquareAll()
 					return nil
 				},
 			},

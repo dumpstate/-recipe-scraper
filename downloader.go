@@ -17,18 +17,6 @@ type ImgDownloader struct {
 	TargetDir string
 }
 
-func exists(fp string) bool {
-	_, err := os.Stat(fp)
-	return err == nil
-}
-
-func createDir(fp string) {
-	err := os.MkdirAll(fp, 0770)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func download(client *http.Client, url string, fp string) {
 	fmt.Printf("Downloading %s to %s\n", url, fp)
 
@@ -68,7 +56,7 @@ func (dwnldr *ImgDownloader) DownloadAll() {
 	for r := range recipes {
 		for _, imgUrl := range r.Record.Imgs {
 			target := dwnldr.imgPath(r.Id, imgUrl)
-			if exists(target) {
+			if FileExists(target) {
 				continue
 			}
 
@@ -80,11 +68,11 @@ func (dwnldr *ImgDownloader) DownloadAll() {
 
 func (dwnldr *ImgDownloader) ensureDir(recipeId int) {
 	dir := dwnldr.recipeDir(recipeId)
-	if exists(dir) {
+	if IsDir(dir) {
 		return
 	}
 
-	createDir(dir)
+	CreateDir(dir)
 }
 
 func (dwnldr *ImgDownloader) recipeDir(recipeId int) string {
